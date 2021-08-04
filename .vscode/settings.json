@@ -1,0 +1,18 @@
+{
+    "debug.javascript.usePreview": false,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.validate": [
+        "javascript",
+    ],
+    "eslint.format.enable": true,
+    "eslint.workingDirectories": [
+        "./src"
+    ],
+    "files.autoSave": "onFocusChange",
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#353535"
+    }
+}
