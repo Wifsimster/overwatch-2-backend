@@ -12,10 +12,11 @@ const PORT = 9002
 const app = express()
 
 app.use(cors())
+app.use(express.json())
 app.use(express.static(path.join(__dirname, '/public')))
 
 app.get('/state', getStates)
-app.post('/state', postState)
+app.post('/state/:id', postState)
 
 const server = createServer(app)
 
@@ -46,7 +47,7 @@ mqttClient.on('connect', () => {
 })
 
 mqttClient.on('message', (topic, message) => {
-  console.log(`${topic}:${message.toString()}`)
+  // console.log(`${topic}:${message.toString()}`)
 
   // Discovery and update devices list
   if (topic.startsWith('tasmota/discovery') && topic.endsWith('config')) {

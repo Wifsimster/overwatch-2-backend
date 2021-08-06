@@ -31,9 +31,16 @@ function getStates(req, res) {
 }
 
 function postState(req, res) {
-  const data = JSON.stringify(req.body)
-  fs.writeFileSync(filePath, data)
-  res.json(JSON.parse(fs.readFileSync(filePath)))
+  const deviceId = req.params.id
+  const data = req.body
+  const devices = readStates()
+  const deviceIndex = devices.findIndex((item) => item.id === deviceId)
+  if (deviceIndex > -1) {
+    const device = { ...devices[deviceIndex], ...data }
+    writeState(device)
+    res.status(201).send()
+  }
+  res.status(404).send()
 }
 
 module.exports = {
