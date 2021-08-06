@@ -10,6 +10,22 @@ function readStates() {
   return JSON.parse(fs.readFileSync(filePath))
 }
 
+// Update device state by id
+function updateState(deviceId, data) {
+  try {
+    const devices = JSON.parse(fs.readFileSync(filePath))
+    const deviceIndex = devices.findIndex((device) => device.id === deviceId)
+    if (deviceIndex > -1) {
+      devices[deviceIndex] = { ...devices[deviceIndex], ...data }
+      fs.writeFileSync(filePath, JSON.stringify(devices))
+    }
+    return true
+  } catch (err) {
+    throw new Error(err)
+  }
+}
+
+// Update device state by mac address or add a new device
 function writeState(data) {
   try {
     const states = JSON.parse(fs.readFileSync(filePath))
@@ -44,5 +60,5 @@ function postState(req, res) {
 }
 
 module.exports = {
-  getStates, postState, readStates, writeState,
+  getStates, postState, updateState, readStates, writeState,
 }
