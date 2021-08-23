@@ -6,12 +6,12 @@ if (!fs.existsSync(filePath)) {
   fs.writeFileSync(filePath, JSON.stringify([]))
 }
 
-function readStates() {
+function readDevices() {
   return JSON.parse(fs.readFileSync(filePath))
 }
 
-// Update device state by id
-function updateState(deviceId, data) {
+// Update device by id
+function updateDevice(deviceId, data) {
   try {
     const devices = JSON.parse(fs.readFileSync(filePath))
     const deviceIndex = devices.findIndex((device) => device.id === deviceId)
@@ -25,40 +25,45 @@ function updateState(deviceId, data) {
   }
 }
 
-// Update device state by mac address or add a new device
-function writeState(data) {
+// Add new device or update by mac address if exists
+function addDevice(data) {
   try {
-    const states = JSON.parse(fs.readFileSync(filePath))
-    const deviceIndex = states.findIndex((device) => device.mac === data.mac)
+    const Devices = JSON.parse(fs.readFileSync(filePath))
+    const deviceIndex = Devices.findIndex((device) => device.mac === data.mac)
     if (deviceIndex > -1) {
-      states[deviceIndex] = data
+      Devices[deviceIndex] = data
     } else {
-      states.push(data)
+      Devices.push(data)
     }
-    fs.writeFileSync(filePath, JSON.stringify(states))
+    fs.writeFileSync(filePath, JSON.stringify(Devices))
     return true
   } catch (err) {
     throw new Error(err)
   }
 }
 
-function getStates(req, res) {
-  res.json(readStates())
+function getDevices(req, res) {
+  res.json(readDevices())
 }
 
-function postState(req, res) {
+function postDevice(req, res) {
   const deviceId = req.params.id
   const data = req.body
-  const devices = readStates()
+  const devices = readDevices()
   const deviceIndex = devices.findIndex((item) => item.id === deviceId)
   if (deviceIndex > -1) {
     const device = { ...devices[deviceIndex], ...data }
-    writeState(device)
+    addDevice(device)
     res.status(201).send()
   }
   res.status(404).send()
 }
 
+function getDevice(id) {
+  const devices = readDevices()
+  return devices.find((item) => item.id === id)
+}
+
 module.exports = {
-  getStates, postState, updateState, readStates, writeState,
+  getDevices, getDevice, postDevice, updateDevice, readDevices, addDevice,
 }
