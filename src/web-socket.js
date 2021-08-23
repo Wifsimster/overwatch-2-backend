@@ -12,9 +12,9 @@ function broadcast(data) {
   })
 }
 
-wss.on('connection', (ws) => {
-  let interval = null
+let interval = null
 
+wss.on('connection', (ws) => {
   // New client, send all available data
   ws.send(JSON.stringify({ devices: readDevices() }))
 
@@ -36,6 +36,7 @@ wss.on('connection', (ws) => {
         device.isOpening = true
 
         interval = setInterval(() => {
+          console.log('open')
           if (device.openedAt < 100 - (100 / device.duration)) {
             device.openedAt += (100 / device.duration)
           } else {
@@ -55,6 +56,7 @@ wss.on('connection', (ws) => {
         device.isClosing = true
 
         interval = setInterval(() => {
+          console.log('close')
           if (device.openedAt > 0 + (100 / device.duration)) {
             device.openedAt -= (100 / device.duration)
           } else {
@@ -70,9 +72,9 @@ wss.on('connection', (ws) => {
       break
     case 'stop':
       if (device) {
-        clearInterval(interval)
         mqttClient.publish(`cmnd/${device.id}/Power1`, '0')
         mqttClient.publish(`cmnd/${device.id}/Power2`, '0')
+        clearInterval(interval)
         device.isOpening = false
         device.isClosing = false
         updateDevice(device.id, device)
