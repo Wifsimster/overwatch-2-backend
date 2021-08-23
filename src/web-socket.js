@@ -13,6 +13,7 @@ function broadcast(data) {
 }
 
 let interval = null
+const updateInterval = 1000
 
 wss.on('connection', (ws) => {
   // New client, send all available data
@@ -22,6 +23,7 @@ wss.on('connection', (ws) => {
   ws.on('message', (data) => {
     const message = JSON.parse(data.toString())
     const device = getDevice(message.device.id)
+    const ratio = 100 / device.duration
 
     switch (message.prefix) {
     case 'update':
@@ -36,9 +38,8 @@ wss.on('connection', (ws) => {
         device.isOpening = true
 
         interval = setInterval(() => {
-          console.log('open')
-          if (device.openedAt < 100 - (100 / device.duration)) {
-            device.openedAt += (100 / device.duration)
+          if (device.openedAt < 100 - ratio) {
+            device.openedAt += ratio
           } else {
             clearInterval(interval)
             device.openedAt = 100
@@ -47,7 +48,7 @@ wss.on('connection', (ws) => {
           }
           updateDevice(device.id, device)
           broadcast({ devices: readDevices() })
-        }, 1000)
+        }, updateInterval)
       }
       break
     case 'close':
@@ -56,9 +57,8 @@ wss.on('connection', (ws) => {
         device.isClosing = true
 
         interval = setInterval(() => {
-          console.log('close')
-          if (device.openedAt > 0 + (100 / device.duration)) {
-            device.openedAt -= (100 / device.duration)
+          if (device.openedAt > 0 + ratio) {
+            device.openedAt -= ratio
           } else {
             clearInterval(interval)
             device.openedAt = 0
@@ -67,7 +67,7 @@ wss.on('connection', (ws) => {
           }
           updateDevice(device.id, device)
           broadcast({ devices: readDevices() })
-        }, 1000)
+        }, updateInterval)
       }
       break
     case 'stop':
