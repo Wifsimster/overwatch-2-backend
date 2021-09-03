@@ -32,7 +32,7 @@ function addDevice(data) {
     const deviceIndex = Devices.findIndex((device) => device.mac === data.mac)
     if (deviceIndex > -1) {
       Devices[deviceIndex] = data
-    } else {
+    } else if (data.id && data.ip && data.mac) {
       Devices.push(data)
     }
     fs.writeFileSync(filePath, JSON.stringify(Devices))
