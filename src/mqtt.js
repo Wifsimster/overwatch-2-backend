@@ -28,8 +28,7 @@ mqttClient.on('connect', () => {
 })
 
 mqttClient.on('message', (topic, message) => {
-  // console.log(`${topic}:${message.toString()}`)
-
+  // Update device status (Online or Offline)
   if (topic.startsWith('tele/') && topic.endsWith('/LWT')) {
     const deviceId = (topic.split('/'))[1]
     updateDevice(deviceId, {
@@ -79,6 +78,8 @@ mqttClient.on('message', (topic, message) => {
         ip: data.ip,
         mac: data.mac,
         model: data.md,
+        states: data.state,
+        firmwareVersion: data.sw,
       })
     } catch (err) {
       console.error(err)

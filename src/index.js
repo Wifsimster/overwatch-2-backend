@@ -2,7 +2,7 @@ const path = require('path')
 const express = require('express')
 const cors = require('cors')
 const { createServer } = require('http')
-const { postDevice, getDevices } = require('./device')
+const { postDevice, getDevices } = require('./controllers/device')
 
 const PORT = 9002
 
