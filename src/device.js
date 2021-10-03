@@ -28,14 +28,15 @@ function updateDevice(deviceId, data) {
 // Add new device or update by mac address if exists
 function addDevice(data) {
   try {
-    const Devices = JSON.parse(fs.readFileSync(filePath))
-    const deviceIndex = Devices.findIndex((device) => device.mac === data.mac)
+    const devices = JSON.parse(fs.readFileSync(filePath))
+    const deviceIndex = devices.findIndex((device) => device.mac === data.mac)
     if (deviceIndex > -1) {
-      Devices[deviceIndex] = data
+      const device = devices[deviceIndex]
+      devices[deviceIndex] = { ...device, ...data }
     } else if (data.id && data.ip && data.mac) {
-      Devices.push(data)
+      devices.push(data)
     }
-    fs.writeFileSync(filePath, JSON.stringify(Devices))
+    fs.writeFileSync(filePath, JSON.stringify(devices))
     return true
   } catch (err) {
     throw new Error(err)
